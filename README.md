@@ -130,6 +130,6 @@ Push ke branch: git push origin fitur-anda
 Buat Pull Request
 
 📄 Lisensi
-MIT License © 2025 Albab Ghozhari
+MIT License © 2025 Albab Ghozari
 
 

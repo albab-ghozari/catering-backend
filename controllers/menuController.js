@@ -1,4 +1,4 @@
-const Menu = require('../models/Menu');
+const { Menu } = require("../models")
 
 exports.getAllMenu = async (req, res) => {
   try {
@@ -14,8 +14,9 @@ exports.addMenu = async (req, res) => {
     const { name, price, description, imageUrl } = req.body;
     const newMenu = await Menu.create({ name, price, description, imageUrl });
     res.status(201).json(newMenu);
-  } catch (err) {
-    res.status(500).json({ message: 'Gagal menambah menu' });
+  }  catch (err) {
+  console.error('Add menu error:', err);
+  res.status(500).json({ message: 'Gagal menambah menu', error: err.message });
   }
 };
 

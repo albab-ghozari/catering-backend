@@ -14,9 +14,9 @@ exports.addMenu = async (req, res) => {
     const { name, price, description, imageUrl } = req.body;
     const newMenu = await Menu.create({ name, price, description, imageUrl });
     res.status(201).json(newMenu);
-  }  catch (err) {
-  console.error('Add menu error:', err);
-  res.status(500).json({ message: 'Gagal menambah menu', error: err.message });
+  } catch (err) {
+    console.error('Add menu error:', err);
+    res.status(500).json({ message: 'Gagal menambah menu', error: err.message });
   }
 };
 

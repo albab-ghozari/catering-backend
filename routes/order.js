@@ -7,7 +7,7 @@ const verifyAdmin = require('../middleware/verifyAdmin');
 
 // User routes
 router.post('/', verifyToken, orderController.createOrder);
-// router.get('/my', verifyToken, orderController.getMyOrders);
+router.get('/my', verifyToken, orderController.getMyOrders);
 router.post('/pay/:orderId', verifyToken, paymentController.payOrder);
 
 // Admin routes

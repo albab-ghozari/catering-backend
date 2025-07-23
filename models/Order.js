@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     eventDate: { type: DataTypes.DATEONLY, allowNull: false },
     totalPrice: { type: DataTypes.INTEGER, allowNull: false },
     status: {
-      type: DataTypes.ENUM('pending', 'confirmed', 'canceled', 'done'),
+      type: DataTypes.ENUM('pending', 'confirmed', 'paid', 'canceled', 'done'),
       defaultValue: 'pending',
     },
     notes: { type: DataTypes.TEXT },

@@ -1,5 +1,5 @@
 const db = require("../models");
-const { Order, OrderItem, Menu } = db;
+const { Order, OrderItem, Menu, User } = db;
 
 exports.createOrder = async (req, res) => {
   try {
@@ -69,5 +69,33 @@ exports.getMyOrders = async (req, res) => {
   } catch (error) {
     console.error("Gagal mengambil pesanan:", error);
     res.status(500).json({ message: "Gagal mengambil pesanan" });
+  }
+};
+
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name", "email"], // sesuaikan field yang kamu pakai
+        },
+        {
+          model: OrderItem,
+          include: [
+            {
+              model: Menu,
+              attributes: ["name", "price", "imageUrl"],
+            },
+          ],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    console.error("Gagal mengambil semua order:", error);
+    res.status(500).json({ message: "Gagal mengambil semua order" });
   }
 };

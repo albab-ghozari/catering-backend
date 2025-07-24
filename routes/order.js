@@ -11,7 +11,7 @@ router.get('/my', verifyToken, orderController.getMyOrders);
 router.post('/pay/:orderId', verifyToken, paymentController.payOrder);
 
 // Admin routes
-// router.get('/', verifyToken, verifyAdmin, orderController.getAllOrders);
+router.get('/', verifyToken, verifyAdmin, orderController.getAllOrders);
 // router.put('/:id/status', verifyToken, verifyAdmin, orderController.updateStatus);
 
 module.exports = router;

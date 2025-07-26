@@ -10,15 +10,27 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: "Data tidak lengkap" });
     }
 
+    // Validasi: tanggal event tidak boleh di masa lalu
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // set ke jam 00:00:00
+
+    const event = new Date(eventDate);
+    event.setHours(0, 0, 0, 0);
+
+    if (event < today) {
+      return res.status(400).json({ message: "Tanggal tidak boleh di masa lalu" });
+    }
+
     let totalPrice = 0;
     const orderItems = [];
 
     for (const item of items) {
       const menu = await Menu.findByPk(item.menuId);
-      if (!menu)
+      if (!menu) {
         return res
           .status(404)
           .json({ message: "Menu tidak ditemukan: " + item.menuId });
+      }
 
       const subTotal = menu.price * item.quantity;
       totalPrice += subTotal;
@@ -44,6 +56,7 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ message: "Gagal membuat pesanan" });
   }
 };
+
 
 exports.getMyOrders = async (req, res) => {
   try {

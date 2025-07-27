@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Menus {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(255)
+  description String?
+  price       Int
+  imageUrl    String?      @db.VarChar(255)
+  createdAt   DateTime     @db.Timestamptz(6)
+  updatedAt   DateTime     @db.Timestamptz(6)
+  OrderItems  OrderItems[]
+}
+
+model OrderItems {
+  id        Int      @id @default(autoincrement())
+  quantity  Int?
+  createdAt DateTime @db.Timestamptz(6)
+  updatedAt DateTime @db.Timestamptz(6)
+  menuId    Int?
+  orderId   Int?
+  subTotal  Int?
+  Menus     Menus?   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  Orders    Orders?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Orders {
+  id         Int                 @id @default(autoincrement())
+  eventDate  DateTime            @db.Date
+  totalPrice Int
+  status     enum_Orders_status? @default(pending)
+  notes      String?
+  createdAt  DateTime            @db.Timestamptz(6)
+  updatedAt  DateTime            @db.Timestamptz(6)
+  userId     Int?
+  OrderItems OrderItems[]
+  Users      Users?              @relation(fields: [userId], references: [id])
+}
+
+model Users {
+  id        Int              @id @default(autoincrement())
+  name      String           @db.VarChar(255)
+  email     String           @unique @db.VarChar(255)
+  password  String           @db.VarChar(255)
+  role      enum_Users_role? @default(user)
+  createdAt DateTime         @db.Timestamptz(6)
+  updatedAt DateTime         @db.Timestamptz(6)
+  Orders    Orders[]
+}
+
+enum enum_Orders_status {
+  pending
+  confirmed
+  paid
+  canceled
+  done
+}
+
+enum enum_Users_role {
+  user
+  admin
+}

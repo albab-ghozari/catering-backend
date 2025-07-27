@@ -1,6 +1,7 @@
-const db = require("../models");
-const { Order, OrderItem, Menu, User } = db;
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
+// CREATE ORDER
 exports.createOrder = async (req, res) => {
   try {
     const { items, eventDate, notes } = req.body;
@@ -10,9 +11,8 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: "Data tidak lengkap" });
     }
 
-    // Validasi: tanggal event tidak boleh di masa lalu
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // set ke jam 00:00:00
+    today.setHours(0, 0, 0, 0);
 
     const event = new Date(eventDate);
     event.setHours(0, 0, 0, 0);
@@ -25,11 +25,10 @@ exports.createOrder = async (req, res) => {
     const orderItems = [];
 
     for (const item of items) {
-      const menu = await Menu.findByPk(item.menuId);
+      const menu = await prisma.menu.findUnique({ where: { id: item.menuId } });
+
       if (!menu) {
-        return res
-          .status(404)
-          .json({ message: "Menu tidak ditemukan: " + item.menuId });
+        return res.status(404).json({ message: "Menu tidak ditemukan: " + item.menuId });
       }
 
       const subTotal = menu.price * item.quantity;
@@ -42,40 +41,42 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const order = await Order.create({ userId, eventDate, notes, totalPrice });
+    const order = await prisma.order.create({
+      data: {
+        userId,
+        eventDate: new Date(eventDate),
+        notes,
+        totalPrice,
+        items: {
+          create: orderItems
+        }
+      }
+    });
 
-    for (const item of orderItems) {
-      await OrderItem.create({ ...item, orderId: order.id });
-    }
-
-    res
-      .status(201)
-      .json({ message: "Pesanan berhasil dibuat", orderId: order.id });
+    res.status(201).json({ message: "Pesanan berhasil dibuat", orderId: order.id });
   } catch (err) {
     console.error("Order Error:", err);
-    res.status(500).json({ message: "Gagal membuat pesanan" });
+    res.status(500).json({ message: "Gagal membuat pesanan", error: err.message });
   }
 };
 
-
+// GET My Orders
 exports.getMyOrders = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const orders = await Order.findAll({
+    const orders = await prisma.order.findMany({
       where: { userId },
-      include: [
-        {
-          model: OrderItem,
-          include: [
-            {
-              model: Menu,
-              attributes: ["name", "price", "imageUrl"],
-            },
-          ],
-        },
-      ],
-      order: [["createdAt", "DESC"]],
+      include: {
+        items: {
+          include: {
+            menu: {
+              select: { name: true, price: true, imageUrl: true }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
     });
 
     res.status(200).json({ orders });
@@ -85,25 +86,23 @@ exports.getMyOrders = async (req, res) => {
   }
 };
 
+// GET All Orders (Admin)
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.findAll({
-      include: [
-        {
-          model: User,
-          attributes: ["id", "name", "email"], // sesuaikan field yang kamu pakai
+    const orders = await prisma.order.findMany({
+      include: {
+        user: {
+          select: { id: true, name: true, email: true }
         },
-        {
-          model: OrderItem,
-          include: [
-            {
-              model: Menu,
-              attributes: ["name", "price", "imageUrl"],
-            },
-          ],
-        },
-      ],
-      order: [["createdAt", "DESC"]],
+        items: {
+          include: {
+            menu: {
+              select: { name: true, price: true, imageUrl: true }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
     });
 
     res.status(200).json({ orders });

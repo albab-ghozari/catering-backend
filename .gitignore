@@ -13,3 +13,5 @@ node_modules/
 # Output
 dist/
 build/
+
+/generated/prisma

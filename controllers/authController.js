@@ -8,7 +8,7 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     // Cari user berdasarkan email
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email }
     });
 

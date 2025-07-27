@@ -59,7 +59,7 @@ exports.register = async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        role: role || 'USER'
+        role: role || 'user'
       }
     });
 

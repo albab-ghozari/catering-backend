@@ -49,8 +49,8 @@ model Users {
   email     String           @unique @db.VarChar(255)
   password  String           @db.VarChar(255)
   role      enum_Users_role? @default(user)
-  createdAt DateTime         @db.Timestamptz(6)
-  updatedAt DateTime         @db.Timestamptz(6)
+  createdAt DateTime         @default(now())@db.Timestamptz(6)
+  updatedAt DateTime         @updatedAt @db.Timestamptz(6)
   Orders    Orders[]
 }
 

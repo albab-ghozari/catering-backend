@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
 
   try {
     // Cek email sudah terdaftar
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.users.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "Email sudah digunakan" });
     }
@@ -54,7 +54,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Simpan user
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         name,
         email,

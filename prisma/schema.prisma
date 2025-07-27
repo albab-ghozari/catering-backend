@@ -56,7 +56,7 @@ model Users {
 
 enum enum_Orders_status {
   pending
-  confirmed
+  confirmedgit 
   paid
   canceled
   done

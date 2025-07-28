@@ -41,7 +41,7 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const order = await prisma.order.create({
+    const order = await prisma.orders.create({
       data: {
         userId,
         eventDate: new Date(eventDate),

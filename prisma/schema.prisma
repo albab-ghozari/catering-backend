@@ -13,16 +13,16 @@ model Menus {
   description String?
   price       Int
   imageUrl    String?      @db.VarChar(255)
-  createdAt   DateTime     @db.Timestamptz(6)
-  updatedAt   DateTime     @db.Timestamptz(6)
+  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @db.Timestamptz(6)
   OrderItems  OrderItems[]
 }
 
 model OrderItems {
   id        Int      @id @default(autoincrement())
   quantity  Int?
-  createdAt DateTime @db.Timestamptz(6)
-  updatedAt DateTime @db.Timestamptz(6)
+  createdAt DateTime @default(now())@db.Timestamptz(6)
+  updatedAt DateTime @updatedAt@db.Timestamptz(6)
   menuId    Int?
   orderId   Int?
   subTotal  Int?
@@ -36,8 +36,8 @@ model Orders {
   totalPrice Int
   status     enum_Orders_status? @default(pending)
   notes      String?
-  createdAt  DateTime            @db.Timestamptz(6)
-  updatedAt  DateTime            @db.Timestamptz(6)
+  createdAt  DateTime            @default(now())@db.Timestamptz(6)
+  updatedAt  DateTime            @updatedAt@db.Timestamptz(6)
   userId     Int?
   OrderItems OrderItems[]
   Users      Users?              @relation(fields: [userId], references: [id])
@@ -49,14 +49,14 @@ model Users {
   email     String           @unique @db.VarChar(255)
   password  String           @db.VarChar(255)
   role      enum_Users_role? @default(user)
-  createdAt DateTime         @default(now())@db.Timestamptz(6)
+  createdAt DateTime         @default(now()) @db.Timestamptz(6)
   updatedAt DateTime         @updatedAt @db.Timestamptz(6)
   Orders    Orders[]
 }
 
 enum enum_Orders_status {
   pending
-  confirmedgit 
+  confirmedgit
   paid
   canceled
   done

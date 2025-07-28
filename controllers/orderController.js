@@ -25,7 +25,7 @@ exports.createOrder = async (req, res) => {
     const orderItems = [];
 
     for (const item of items) {
-      const menu = await prisma.menu.findUnique({ where: { id: item.menuId } });
+      const menu = await prisma.menus.findUnique({ where: { id: item.menuId } });
 
       if (!menu) {
         return res.status(404).json({ message: "Menu tidak ditemukan: " + item.menuId });
@@ -65,7 +65,7 @@ exports.getMyOrders = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.orders.findMany({
       where: { userId },
       include: {
         items: {
@@ -89,7 +89,7 @@ exports.getMyOrders = async (req, res) => {
 // GET All Orders (Admin)
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.orders.findMany({
       include: {
         user: {
           select: { id: true, name: true, email: true }

@@ -71,7 +71,7 @@ exports.deleteMenu = async (req, res) => {
 
     if (!existing) return res.status(404).json({ message: 'Menu tidak ditemukan' });
 
-    await prisma.menu.delete({
+    await prisma.menus.delete({
       where: { id: parseInt(id) }
     });
 

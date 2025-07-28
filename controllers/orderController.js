@@ -47,7 +47,7 @@ exports.createOrder = async (req, res) => {
         eventDate: new Date(eventDate),
         notes,
         totalPrice,
-        items: {
+        OrderItems: {
           create: orderItems
         }
       }
@@ -91,7 +91,7 @@ exports.getAllOrders = async (req, res) => {
   try {
     const orders = await prisma.orders.findMany({
       include: {
-        user: {
+        Users: {
           select: { id: true, name: true, email: true }
         },
         items: {

@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 // GET semua menu
 exports.getAllMenu = async (req, res) => {
   try {
-    const menu = await prisma.menu.findMany();
+    const menu = await prisma.menus.findMany();
     res.json(menu);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -16,7 +16,7 @@ exports.addMenu = async (req, res) => {
   try {
     const { name, price, description, imageUrl } = req.body;
 
-    const newMenu = await prisma.menu.create({
+    const newMenu = await prisma.menus.create({
       data: {
         name,
         price: parseFloat(price),
@@ -38,13 +38,13 @@ exports.updateMenu = async (req, res) => {
     const { id } = req.params;
     const { name, price, description, imageUrl } = req.body;
 
-    const existing = await prisma.menu.findUnique({
+    const existing = await prisma.menus.findUnique({
       where: { id: parseInt(id) }
     });
 
     if (!existing) return res.status(404).json({ message: 'Menu tidak ditemukan' });
 
-    const updatedMenu = await prisma.menu.update({
+    const updatedMenu = await prisma.menus.update({
       where: { id: parseInt(id) },
       data: {
         name,
@@ -65,7 +65,7 @@ exports.deleteMenu = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const existing = await prisma.menu.findUnique({
+    const existing = await prisma.menus.findUnique({
       where: { id: parseInt(id) }
     });
 

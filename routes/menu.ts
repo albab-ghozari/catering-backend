@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import menuController from '../controllers/menuController';
+import * as menuController from '../controllers/menuController';
 import verifyToken from '../middleware/verifyToken';
 import verifyAdmin from '../middleware/verifyAdmin';
 

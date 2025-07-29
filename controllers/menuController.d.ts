@@ -1,18 +1,20 @@
-const { PrismaClient } = require('@prisma/client');
+import { Request, Response } from 'express';
+import { PrismaClient, Prisma } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 // GET semua menu
-exports.getAllMenu = async (req, res) => {
+export const getAllMenu = async (req: Request, res: Response): Promise<void> => {
   try {
     const menu = await prisma.menus.findMany();
     res.json(menu);
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
 // POST tambah menu
-exports.addMenu = async (req, res) => {
+export const addMenu = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, price, description, imageUrl } = req.body;
 
@@ -22,18 +24,18 @@ exports.addMenu = async (req, res) => {
         price: parseFloat(price),
         description,
         imageUrl
-      }
+      } as Prisma.MenusCreateInput
     });
 
     res.status(201).json(newMenu);
-  } catch (err) {
+  } catch (err: any) {
     console.error('Add menu error:', err);
     res.status(500).json({ message: 'Gagal menambah menu', error: err.message });
   }
 };
 
 // PUT update menu
-exports.updateMenu = async (req, res) => {
+export const updateMenu = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { name, price, description, imageUrl } = req.body;
@@ -42,7 +44,10 @@ exports.updateMenu = async (req, res) => {
       where: { id: parseInt(id) }
     });
 
-    if (!existing) return res.status(404).json({ message: 'Menu tidak ditemukan' });
+    if (!existing) {
+      res.status(404).json({ message: 'Menu tidak ditemukan' });
+      return;
+    }
 
     const updatedMenu = await prisma.menus.update({
       where: { id: parseInt(id) },
@@ -55,13 +60,13 @@ exports.updateMenu = async (req, res) => {
     });
 
     res.json(updatedMenu);
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ message: 'Gagal mengupdate menu', error: err.message });
   }
 };
 
 // DELETE menu
-exports.deleteMenu = async (req, res) => {
+export const deleteMenu = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 
@@ -69,14 +74,17 @@ exports.deleteMenu = async (req, res) => {
       where: { id: parseInt(id) }
     });
 
-    if (!existing) return res.status(404).json({ message: 'Menu tidak ditemukan' });
+    if (!existing) {
+      res.status(404).json({ message: 'Menu tidak ditemukan' });
+      return;
+    }
 
     await prisma.menus.delete({
       where: { id: parseInt(id) }
     });
 
     res.json({ message: 'Menu berhasil dihapus' });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ message: 'Gagal menghapus menu', error: err.message });
   }
 };

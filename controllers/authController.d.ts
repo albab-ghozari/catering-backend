@@ -1,27 +1,32 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { PrismaClient } = require('@prisma/client');
+import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { PrismaClient, Prisma } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
-exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
-    // Cari user berdasarkan email
     const user = await prisma.users.findUnique({
       where: { email }
     });
 
-    if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
+    if (!user) {
+      res.status(404).json({ message: "User tidak ditemukan" });
+      return;
+    }
 
-    // Bandingkan password
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ message: "Password salah" });
+    if (!valid) {
+      res.status(401).json({ message: "Password salah" });
+      return;
+    }
 
-    // Buat token JWT
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );
 
@@ -35,32 +40,30 @@ exports.login = async (req, res) => {
         role: user.role
       }
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
-exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password, role } = req.body;
 
   try {
-    // Cek email sudah terdaftar
     const existingUser = await prisma.users.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: "Email sudah digunakan" });
+      res.status(400).json({ message: "Email sudah digunakan" });
+      return;
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Simpan user
     const user = await prisma.users.create({
       data: {
         name,
         email,
         password: hashedPassword,
         role: role || 'user'
-      }
+      } as Prisma.UsersUncheckedCreateInput
     });
 
     res.status(201).json({
@@ -72,8 +75,8 @@ exports.register = async (req, res) => {
         role: user.role
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    res.status(500).json({ message: "Terjadi kesalahan server" });
+    res.status(500).json({ message: "Terjadi kesalahan server", error: error.message });
   }
 };

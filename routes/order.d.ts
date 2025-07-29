@@ -1,9 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const orderController = require('../controllers/orderController');
-const paymentController = require('../controllers/paymentController');
-const verifyToken = require('../middleware/verifyToken');
-const verifyAdmin = require('../middleware/verifyAdmin');
+import { Router } from 'express';
+import orderController from '../controllers/orderController';
+import paymentController from '../controllers/paymentController';
+import verifyToken from '../middleware/verifyToken';
+import verifyAdmin from '../middleware/verifyAdmin';
+
+const router = Router();
 
 // User routes
 router.post('/', verifyToken, orderController.createOrder);
@@ -14,4 +15,4 @@ router.post('/pay/:orderId', verifyToken, paymentController.payOrder);
 router.get('/', verifyToken, verifyAdmin, orderController.getAllOrders);
 // router.put('/:id/status', verifyToken, verifyAdmin, orderController.updateStatus);
 
-module.exports = router;
+export default router;

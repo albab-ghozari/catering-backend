@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const menuController = require('../controllers/menuController');
-const verifyToken = require('../middleware/verifyToken');
-const verifyAdmin = require('../middleware/verifyAdmin');
+import { Router } from 'express';
+import menuController from '../controllers/menuController';
+import verifyToken from '../middleware/verifyToken';
+import verifyAdmin from '../middleware/verifyAdmin';
+
+const router = Router();
 
 // Public
 router.get('/', menuController.getAllMenu);
@@ -12,4 +13,4 @@ router.post('/', verifyToken, verifyAdmin, menuController.addMenu);
 router.put('/:id', verifyToken, verifyAdmin, menuController.updateMenu);
 router.delete('/:id', verifyToken, verifyAdmin, menuController.deleteMenu);
 
-module.exports = router;
+export default router;

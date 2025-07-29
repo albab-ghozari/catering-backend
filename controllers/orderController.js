@@ -94,9 +94,9 @@ exports.getAllOrders = async (req, res) => {
         Users: {
           select: { id: true, name: true, email: true }
         },
-        items: {
+        OrderItems: {
           include: {
-            menu: {
+            Menus: {
               select: { name: true, price: true, imageUrl: true }
             }
           }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import verifyToken  from "../middleware/verifyToken";
+import verifyToken from "../middleware/verifyToken";
 import verifySuperAdmin from "../middleware/verifySuperAdmin";
 import { promoteToAdmin } from "../controllers/adminController";
 

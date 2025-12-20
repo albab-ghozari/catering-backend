@@ -62,7 +62,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         name,
         email,
         password: hashedPassword,
-        role:'user'
+        role: 'user'
       } as Prisma.UsersUncheckedCreateInput
     });
 

@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-interface JwtPayload {
+export interface JwtPayload {
   id: number;
   role: string;
   // tambahkan properti lain jika ada di token
 }
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
 }
 

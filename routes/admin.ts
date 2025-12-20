@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verifyToken  from "../middleware/verifyToken";
-import verifyAdmin from "../middleware/verifyAdmin";
+import verifySuperAdmin from "../middleware/verifySuperAdmin";
 import { promoteToAdmin } from "../controllers/adminController";
 
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 router.put(
   "/promote/:userId",
   verifyToken,
-  verifyAdmin,
+  verifySuperAdmin,
   promoteToAdmin
 );
 

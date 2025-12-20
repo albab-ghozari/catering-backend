@@ -12,8 +12,8 @@ build/
 prisma/dev.db
 
 # Security
-scripts/createSuperAdmin.ts
-scripts/.superadmin.lock
+script/createSuperAdmin.ts
+script/.superadmin.lock
 
 # Logs
 logs/

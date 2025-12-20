@@ -1,17 +1,26 @@
-# Node.js
-node_modules/
+# ENV
 .env
-*.log
+.env.*
+!.env.example
 
-# IDE/editor
-.vscode/
-*.swp
-
-# OS files
-.DS_Store
-
-# Output
+# Node
+node_modules/
 dist/
 build/
 
-/generated/prisma
+# Prisma
+prisma/dev.db
+
+# Security
+scripts/createSuperAdmin.ts
+scripts/.superadmin.lock
+
+# Logs
+logs/
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

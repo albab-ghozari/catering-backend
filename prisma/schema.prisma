@@ -5,9 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  
 }
-
 
 model Menus {
   id          Int          @id @default(autoincrement())
@@ -23,8 +21,8 @@ model Menus {
 model OrderItems {
   id        Int      @id @default(autoincrement())
   quantity  Int?
-  createdAt DateTime @default(now())@db.Timestamptz(6)
-  updatedAt DateTime @updatedAt@db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
   menuId    Int?
   orderId   Int?
   subTotal  Int?
@@ -38,8 +36,8 @@ model Orders {
   totalPrice Int
   status     enum_Orders_status? @default(pending)
   notes      String?
-  createdAt  DateTime            @default(now())@db.Timestamptz(6)
-  updatedAt  DateTime            @updatedAt@db.Timestamptz(6)
+  createdAt  DateTime            @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime            @updatedAt @db.Timestamptz(6)
   userId     Int?
   OrderItems OrderItems[]
   Users      Users?              @relation(fields: [userId], references: [id])
@@ -67,4 +65,5 @@ enum enum_Orders_status {
 enum enum_Users_role {
   user
   admin
+  superadmin
 }

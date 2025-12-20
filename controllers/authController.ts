@@ -46,7 +46,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     const existingUser = await prisma.users.findUnique({ where: { email } });
@@ -62,7 +62,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         name,
         email,
         password: hashedPassword,
-        role: role || 'user'
+        role:'user'
       } as Prisma.UsersUncheckedCreateInput
     });
 

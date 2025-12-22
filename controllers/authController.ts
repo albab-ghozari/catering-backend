@@ -202,6 +202,8 @@ export const requestResetPassword = async (
 
     res.json({
       message: "Jika email terdaftar, link reset akan dikirim",
+      token: resetToken, // Hapus ini di produksi
+
     });
   } catch (error) {
     console.error("Request reset password error:", error);
@@ -209,30 +211,69 @@ export const requestResetPassword = async (
   }
 };
 
-export const resetPassword = async (req: Request, res: Response) => {
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { token } = req.params;
+  const { password, confirmPassword } = req.body;
+
   try {
-    // Extract email and newPassword from the request body
-    const { email, newPassword } = req.body;
-
-    // Find the user by email
-    const user = await prisma.users.findUnique({ where: { email } });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    // 1️⃣ Validasi input
+    if (!password || !confirmPassword) {
+      res.status(400).json({ message: "Password wajib diisi" });
+      return;
     }
 
-    // Hash the newPassword
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    if (password !== confirmPassword) {
+      res.status(400).json({ message: "Password tidak sama" });
+      return;
+    }
 
-    // Update the user's password
-    await prisma.users.update({
-      where: { id: user.id },
-      data: { password: hashedPassword },
+    if (password.length < 6) {
+      res.status(400).json({ message: "Password minimal 6 karakter" });
+      return;
+    }
+
+    // 2️⃣ Hash token dari URL
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // 3️⃣ Cari user berdasarkan token
+    const user = await prisma.users.findFirst({
+      where: {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: {
+          gt: new Date(), // belum expired
+        },
+      },
     });
 
-    return res.json({ message: "Password reset successfully" });
+    if (!user) {
+      res.status(400).json({
+        message: "Token tidak valid atau sudah kadaluarsa",
+      });
+      return;
+    }
+
+    // 4️⃣ Hash password baru
+    const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // 5️⃣ Update password & hapus token
+    await prisma.users.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      },
+    });
+
+    res.json({
+      message: "Password berhasil direset. Silakan login kembali.",
+    });
   } catch (error) {
-    console.error("Error resetting password:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

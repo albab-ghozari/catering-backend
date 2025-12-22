@@ -9,7 +9,7 @@ const router = Router();
 router.post('/login', authController.login);
 router.post('/register', authController.register);
 router.post('/dahboard-admin', verifyToken, verifyAdmin);
-router.post('/reset-password/:email', authController.resetPassword);
+router.post('/reset-password/:token', authController.resetPassword);
 router.post('/request-reset-password/', authController.requestResetPassword);
 
 export default router;
